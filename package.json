@@ -1,11 +1,36 @@
 {
   "name": "trntshop",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./bin/www"
   },
+  "dependencies": {
+    "bson": "^4.0.2",
+    "chalk": "^2.4.2",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^3.0.0",
+    "connect-mongostore": "^0.1.4",
+    "cookie-parser": "^1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^8.0.0",
+    "ejs": "^2.6.2",
+    "express": "^4.16.4",
+    "express-session": "^1.16.2",
+    "http-errors": "~1.6.3",
+    "mongod": "^2.0.0",
+    "mongodb": "^3.2.7",
+    "mongoose": "^5.6.4",
+    "morgan": "~1.9.1",
+    "nodemon": "^1.19.1",
+    "path": "^0.12.7",
+    "save": "^2.4.0",
+    "startbootstrap-landing-page": "^5.0.6",
+    "validator": "^11.1.0",
+    "yargs": "^13.3.0"
+  },
+  "main": "app.js",
+  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/UliEdwina/trntshop.git"
@@ -16,7 +41,5 @@
     "url": "https://github.com/UliEdwina/trntshop/issues"
   },
   "homepage": "https://github.com/UliEdwina/trntshop#readme",
-  "dependencies": {
-    "express": "^4.17.1"
-  }
+  "description": ""
 }
