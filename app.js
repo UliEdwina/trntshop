@@ -35,15 +35,15 @@ let session = require('express-session');
 
 // // })
 
-// let indexRouter = require('./routes/index');
-// let usersRouter = require('./routes/users');
+let indexRouter = require('./routes/index');
+let usersRouter = require('./routes/users');
 let MongoStore = require('connect-mongo')(session);
 let app = express();
 
 
 // // // view engine setup
-//  app.set('views', path.join(__dirname, 'views'));
-//  app.set('view engine', 'ejs');
+ app.set('views', path.join(__dirname, 'views'));
+ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 console.log('works here')
@@ -53,7 +53,7 @@ app.use(cookieParser());
 console.log('works here');
 // app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use('/', indexRouter);
+app.use('/', indexRouter);
 // app.use('/users', usersRouter);
 
 require('dotenv').config();
@@ -77,7 +77,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true } )
             }
         }))
 
-// // catch 404 and forward to error handler
+// catch 404 and forward to error handler
 // app.use(function(req, res, next) {
 //   next(createError(404));
 // });
