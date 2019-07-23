@@ -1,0 +1,32 @@
+<div class="jumbotron">
+    <div class="container">
+      <h1 class="display-3 text-center">Helpful Resources</h1>
+    </div>
+
+   <% include ./instant-search %>
+    
+</div>
+
+<div class="row" id="productSearchResults">
+
+    <% for (let i = 0; i < products.length; i++) { %>
+    
+      <div class="col">      
+          <div class="card">
+              <a href="/api/product/<%= products[i]._id %>"> 
+                <img class="card-img-top" src="<%= products[i].image %>" alt="Card image cap" />
+              </a> 
+              <div class="card-body">
+                <h1 class ="card-title">Eccentricity Score: <%= products.[i].escore%></h1>
+                <h5 class="card-title">Name: <%= products[i].name %> </h5>
+                <p class="card-text">Category: <%= products[i].category.name %> </p>
+                <p class="card-text">$ <%= products[i].price %> </p>
+                <a href="/api/product/<%= products[i]._id %>" class="btn btn-primary">Shop</a>
+              </div>
+          </div>
+      </div>
+
+    <% } %>
+
+</div>
+

@@ -1,11 +1,12 @@
-let express = require('express');
-let router = express.Router();
+var express = require('express');
+var router = express.Router();
 
-
+let productController = require('./product/controllers/productController')
+let paginate = require('./product/utils/pagination')
 
 /* GET home page. */
-router.get('/', (req, res)=> {
-    res.render('index.ejs')
-    console.log('hi')
-})
+router.get('/', productController.getPageIfUserLoggedIn);
+
+router.get('/page/:page', paginate);
+
 module.exports = router;

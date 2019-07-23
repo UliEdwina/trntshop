@@ -3,9 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "watch": "nodemon ./main.js"
+    "start": "node ./bin/www"
   },
   "dependencies": {
+    "async": "^3.1.0",
+    "bcrypt": "^3.0.6",
     "boostrap": "^2.0.0",
     "bootstrap": "^4.3.1",
     "bson": "^4.0.2",
@@ -19,15 +21,23 @@
     "ejs": "^2.6.2",
     "express": "^4.16.4",
     "express-session": "^1.16.2",
+    "express-validator": "^6.1.1",
     "http-errors": "~1.6.3",
+    "jumbotron": "^0.2.9",
+    "method-override": "^3.0.0",
+    "moment": "^2.24.0",
     "mongod": "^2.0.0",
     "mongodb": "^3.2.7",
+    "mongoosastic": "^4.5.0",
     "mongoose": "^5.6.4",
     "morgan": "~1.9.1",
     "nodemon": "^1.19.1",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "save": "^2.4.0",
     "startbootstrap-landing-page": "^5.0.6",
+    "stripe": "^7.4.0",
     "validator": "^11.1.0",
     "yargs": "^13.3.0"
   },

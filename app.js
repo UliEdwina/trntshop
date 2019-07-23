@@ -1,64 +1,30 @@
-
-let express = require('express');
-let path = require('path');
-console.log('works here')
+let path         = require('path');
+let logger       = require('morgan');
+let express      = require('express');
+let passport     = require('passport');
+let mongoose     = require('mongoose');
+let createError  = require('http-errors');
 let cookieParser = require('cookie-parser');
-let logger = require('morgan');
 
+let methodOverride = require('method-override')
 
-let mongoose = require('mongoose');
-let session = require('express-session');
-// let validator = require('validator')
-// let chalk = require('chalk')
-// let yargs = require('yargs')
-// console.log(process.argv)
-// console.log(yargs.argv)
-// yargs.version('1.1.0')
+let indexRouter   = require('./routes/index');
+let cartRouter    = require('./routes/cart/cart');
+let usersRouter   = require('./routes/users/users');
+let adminRouter   = require('./routes/admin/admin');
+let productRouter = require('./routes/product/product');
 
-// // //create add
-// // yargs.command({
-// //     command: 'add',
-// //     describe: 'new oddity',
-// //     handler : function () {
-// //         console.log('new bote')
-// //     }
+let flash            = require('connect-flash');
+let session          = require('express-session');
+let expressValidator = require('express-validator');
 
-// // })
+let cartMiddleware = require('./routes/cart/utils/cartMiddleware')
 
-// // //create
-// // yargs.command({
-// //     command: 'remove',
-// //     describe: 'new oddity',
-// //     handler : function () {
-// //         console.log('remving')
-// //     }
-
-// // })
-
-let indexRouter = require('./routes/index');
-let usersRouter = require('./routes/users');
 let MongoStore = require('connect-mongo')(session);
-let app = express();
 
-
-// // // view engine setup
- app.set('views', path.join(__dirname, 'views'));
- app.set('view engine', 'ejs');
-
-app.use(logger('dev'));
-console.log('works here')
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-console.log('works here');
-// app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
-// app.use('/users', usersRouter);
+let Category = require('./routes/product/models/Category')
 
 require('dotenv').config();
-
-
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true } )
         .then( () => {
@@ -66,32 +32,99 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true } )
         })
         .catch( err => console.log(`ERROR: ${err}`))
 
-        app.use(session({
-            resave: true,
-            saveUninitialized: true,
-            secret: process.env.SESSION_SECRET,
-            store: new MongoStore({ url: process.env.MONGODB_URI, autoReconnect: true}),
-            cookie: {
-                secure: false, 
-                maxAge: 365 * 24 * 60 * 60 * 1000
-            }
-        }))
+let app = express();
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(methodOverride('_method'))
+
+app.use(session({
+    resave: true,
+    saveUninitialized: true,
+    secret: process.env.SESSION_SECRET,
+    store: new MongoStore({ url: process.env.MONGODB_URI, autoReconnect: true}),
+    cookie: {
+        secure: false, 
+        maxAge: 365 * 24 * 60 * 60 * 1000
+    }
+}))
+
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session())
+
+require('./lib/passport/passport')(passport);
+
+app.use(function(req, res, next) {
+    res.locals.user        = req.user;
+
+    res.locals.error       = req.flash("error")
+    res.locals.error_msg   = req.flash("error_msg")
+    res.locals.success_msg = req.flash("success_msg")
+
+    next();
+});
+
+app.use(function (req, res, next) {
+    Category.find({})
+            .then( categories => {
+                
+                res.locals.categories = categories
+
+                next()
+            } )
+            .catch( error => {
+                return next(error)
+            })
+})
+
+app.use(cartMiddleware)
+
+app.use(expressValidator, ()=>({
+    errorFormatter: function(param, message, value) {
+        let namespace = param.split('.');
+        let root      = namespace.shift();
+        let formParam = root;
+
+        while (namespace.length) {
+            formParam += '[' + namespace.shift() + ']';
+        }
+
+        return {
+            param:   formParam,
+            message: message,
+            value:   value
+        }
+    }
+}))
+
+app.use('/',            indexRouter);
+app.use('/api/cart',    cartRouter);
+app.use('/api/users',   usersRouter);
+app.use('/api/admin',   adminRouter);
+app.use('/api/product', productRouter);
 
 // catch 404 and forward to error handler
-// app.use(function(req, res, next) {
-//   next(createError(404));
-// });
+app.use(function(req, res, next) {
+    next(createError(404));
+});
 
-// // // error handler
-// app.use(function(err, req, res, next) {
-//   // set locals, only providing error in development
-//   res.locals.message = err.message;
-//   res.locals.error = req.app.get('env') === 'development' ? err : {};
+// error handler
+app.use(function(err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error   = req.app.get('env') === 'development' ? err : {};
 
-//   // render the error page
-//   res.status(err.status || 500);
-//   res.render('error');
-// });
-
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
+});
 
 module.exports = app;
